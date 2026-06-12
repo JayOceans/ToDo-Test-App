@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Island Todo ⚡</title>
+  <meta name="theme-color" content="#00ff9d">
+  <link rel="manifest" href="data:application/manifest+json,{
+    &quot;name&quot;:&quot;Island Todo&quot;,
+    &quot;short_name&quot;:&quot;Island Todo&quot;,
+    &quot;start_url&quot;:&quot;.&quot;,
+    &quot;display&quot;:&quot;standalone&quot;,
+    &quot;background_color&quot;:&quot;#0f0f12&quot;,
+    &quot;theme_color&quot;:&quot;#00ff9d&quot;,
+    &quot;icons&quot;:[{&quot;src&quot;:&quot;https://via.placeholder.com/192&quot;,&quot;sizes&quot;:&quot;192x192&quot;,&quot;type&quot;:&quot;image/png&quot;}]
+  }">
+  <style>
+    body {font-family: 'Segoe UI', sans-serif; background: #0f0f12; color: #e0e0e0; margin: 0; padding: 20px; min-height: 100vh;}
+    .container {max-width: 600px; margin: 40px auto; background: #1a1a1f; border-radius: 16px; padding: 30px; box-shadow: 0 10px 30px rgba(0,0,0,0.5);}
+    h1 {text-align: center; margin-bottom: 30px; color: #00ff9d;}
+    .input-area {display: flex; gap: 10px; margin-bottom: 30px;}
+    input {flex: 1; padding: 14px; border: none; border-radius: 8px; background: #25252b; color: white; font-size: 16px;}
+    button {padding: 14px 24px; background: #00ff9d; color: black; border: none; border-radius: 8px; font-weight: bold; cursor: pointer;}
+    button:hover {background: #00cc7a;}
+    ul {list-style: none; padding: 0;}
+    li {background: #25252b; padding: 14px; margin-bottom: 8px; border-radius: 8px; display: flex; align-items: center; gap: 12px;}
+    li.done {opacity: 0.6; text-decoration: line-through;}
+    .delete {margin-left: auto; background: #ff3b5c; color: white; padding: 6px 12px; font-size: 12px; border: none; border-radius: 4px;}
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Island Todo ⚡</h1>
+    <div class="input-area">
+      <input type="text" id="taskInput" placeholder="What needs to be done?" autofocus>
+      <button onclick="addTask()">Add</button>
+    </div>
+    <ul id="taskList"></ul>
+  </div>
+
+  <script>
+    // ... (same script as before - keeping it short here)
+    const taskList = document.getElementById('taskList');
+    const taskInput = document.getElementById('taskInput');
+
+    function loadTasks() {
+      const tasks = JSON.parse(localStorage.getItem('tasks')) || [];
+      taskList.innerHTML = '';
+      tasks.forEach((task, index) => {
+        const li = document.createElement('li');
+        li.className = task.done ? 'done' : '';
+        li.innerHTML = `
+          <input type="checkbox" ${task.done ? 'checked' : ''} onchange="toggleDone(${index})">
+          <span>${task.text}</span>
+          <button class="delete" onclick="deleteTask(${index})">Delete</button>
+        `;
+        taskList.appendChild(li);
+      });
+    }
+
+    function addTask() {
+      const text = taskInput.value.trim();
+      if (!text) return;
+      const tasks = JSON.parse(localStorage.getItem('tasks')) || [];
+      tasks.push({ text, done: false });
+      localStorage.setItem('tasks', JSON.stringify(tasks));
+      taskInput.value = '';
+      loadTasks();
+    }
+
+    function toggleDone(index) {
+      const tasks = JSON.parse(localStorage.getItem('tasks')) || [];
+      tasks[index].done = !tasks[index].done;
+      localStorage.setItem('tasks', JSON.stringify(tasks));
+      loadTasks();
+    }
+
+    function deleteTask(index) {
+      const tasks = JSON.parse(localStorage.getItem('tasks')) || [];
+      tasks.splice(index, 1);
+      localStorage.setItem('tasks', JSON.stringify(tasks));
+      loadTasks();
+    }
+
+    taskInput.addEventListener('keypress', (e) => {
+      if (e.key === 'Enter') addTask();
+    });
+
+    loadTasks();
+  </script>
+</body>
+</html>
